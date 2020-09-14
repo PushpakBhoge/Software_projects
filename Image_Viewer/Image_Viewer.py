@@ -106,7 +106,6 @@ def show_images():
 
 instruct = Label(root, text="select directory to view images",font = ('calibri', 14, 'bold'))
 directory_show = Entry(width = 70, borderwidth=5)
-#directory_show.insert(0, initial_dir)
 directory_show.insert(0, "F:\\Career related\\Programming\\Python\\GUI\\Tkinter\\Assets\\gallary")
 browse_button = Button(root, text="Browse", width=10, command=browse_dir)
 button = Button(root, text="View images", width=50, height = 2,
