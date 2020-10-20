@@ -1,5 +1,6 @@
 from PIL import ImageTk 
 from tkinter import filedialog
+from tkinter import messagebox
 from tkinter import *
 import PIL
 import os
@@ -99,6 +100,10 @@ def show_images():
 			])]
 	Images_dir = [os.path.join(directory,x) for x in files]
 	
+	# handling No images indirectory case
+	if len(Images_dir)<1:
+		messagebox.showinfo("Alert","No images found in this directory")
+		return None
 	# Get current Screen resolution
 	# 10 % of the screen height is excluded to accomodate Start menu
 	global Scr_width
