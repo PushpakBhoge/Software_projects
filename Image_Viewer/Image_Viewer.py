@@ -35,9 +35,9 @@ def resize(temp_image, percentile = 0.9):
 def Flow(image_number):
 	global Image_window
 	global image_label
-	global button_forward
-	global button_back
 	global temp_image
+	global Images_dir
+	global files
 
 	# remove image from my_label 
 	image_label.place_forget()
@@ -45,24 +45,26 @@ def Flow(image_number):
 	# load the next image and put it on label widget
 	temp_image = ImageTk.PhotoImage(resize(Images_dir[image_number-1]))
 	width, height = temp_image.width(), temp_image.height()
-	image_label = Label(Image_window, image=temp_image)
-
-	# update the buttons with next and previous image
-	button_forward = Button(Image_window, text=">>", bg="black", fg="white",
-		width=10, height=10, relief=FLAT, command=lambda: Flow(image_number+1))
-	button_back = Button(Image_window, text="<<", bg="black", fg="white",
-		width=10, height=10, relief=FLAT, command=lambda: Flow(image_number-1))
-
-	# make the respective buttons disabled at last and first iamge
-	if image_number==len(Images_dir):
-		button_forward = Button(Image_window, text=">>", bg="black", fg="white",
-			width=10, height=10, relief=FLAT, state=DISABLED)
-	if image_number==1:
-		button_back = Button(Image_window, text="<<", bg="black", fg="white",
-			width=10, height=10, relief=FLAT, state=DISABLED)
+	image_label = Label(Image_window, image=temp_image)	
 
 	# Place the widgets on the window
 	image_label.place(x=(Scr_width//2)-(width//2), y=(Scr_height//2)-(height//2))
+
+	# update image name over title
+	Image_window.title(files[image_number-1])
+
+	# update the buttons with next and previous image
+	button_back = Button(Image_window, text="<<", bg="black", fg="white",
+		width=10, height=10, relief=FLAT, command=lambda: Flow(image_number-1))
+	button_forward = Button(Image_window, text=">>", bg="black", fg="white",
+		width=10, height=10, relief=FLAT, command=lambda: Flow(image_number+1))
+
+	# make the respective buttons disabled at last and first iamge
+	if image_number==len(Images_dir):
+		button_forward.config(state = DISABLED)
+	if image_number==1:
+		button_back.config(state = DISABLED)
+
 	button_back.place(x=0, y=(Scr_height//2)-80)
 	button_forward.place(x=Scr_width-80, y=(Scr_height//2)-80)
 
@@ -80,10 +82,8 @@ def show_images():
 	# setting widget variables as global
 	global Image_window
 	global image_label
-	global button_forward
-	global button_back
+	global files
 	global Images_dir
-	global temp_image
 
 	# get current directory from directory_show Entry widget 
 	# and filter all non - image files from the directory
@@ -104,6 +104,7 @@ def show_images():
 	if len(Images_dir)<1:
 		messagebox.showinfo("Alert","No images found in this directory")
 		return None
+
 	# Get current Screen resolution
 	# 10 % of the screen height is excluded to accomodate Start menu
 	global Scr_width
@@ -113,27 +114,13 @@ def show_images():
 
 	# Create a second window for displaying images
 	Image_window = Toplevel()
-	Image_window.title("image Viewer")
 	Image_window.geometry("{}x{}".format(Scr_width,Scr_height))
 	Image_window.config(bg="black")
 
-	# load first image and resize the image if it is greater than 1100,1000
-	# read image and place it at exactly the center of the screen
-	temp_image = ImageTk.PhotoImage(resize(Images_dir[0]))
-	width, height = temp_image.width(), temp_image.height()
-	image_label = Label(Image_window, image=temp_image)
-	image_label.place(x=(Scr_width//2)-(width//2), y=(Scr_height//2)-(height//2))
-
-	# create button widgets
-	button_back = Button(Image_window, text="<<", bg="black", fg="white",
-		width=10, height=10, relief=FLAT, state=DISABLED)
-	button_forward = Button(Image_window, text=">>", bg="black", fg="white",
-		width=10, height=10, relief=FLAT, command=lambda: Flow(2))
-
-	# place those buttons
-	# height of button is 80
-	button_back.place(x=0, y=(Scr_height//2)-80)
-	button_forward.place(x=Scr_width-80, y=(Scr_height//2)-80)
+	# Create image place holder for putting images and 
+	# inititat flow of images
+	image_label = Label(Image_window)
+	Flow(1)
 
 
 # Some Widgets on the main Window
