@@ -92,7 +92,16 @@ def show_images():
 	# charecters in its name absolute directories of all images 
 	# are stored in a list "Image_dir"
 	directory = directory_show.get()
-	files = os.listdir(directory)
+
+	# Check if the directory is valid if not
+	# Show alert message
+	try:
+		files = os.listdir(directory)
+	except:
+		messagebox.showinfo("Alert", "Invalid directory")
+		return None
+
+
 	files = [x for x in files if any([x.encode("utf-8").endswith(b".jpeg"), 
 			x.encode("utf-8").endswith(b".png"),
 			x.encode("utf-8").endswith(b".jpg"),
