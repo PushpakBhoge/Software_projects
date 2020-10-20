@@ -1,4 +1,4 @@
-from PIL import ImageTk
+from PIL import ImageTk 
 from tkinter import filedialog
 from tkinter import *
 import PIL
@@ -12,16 +12,22 @@ root.title("Image Viewer")
 initial_dir = os.getcwd()
 
 # resizing while keeping aspect ratio
-def resize(temp_image):
+def resize(temp_image, percentile = 0.9):
+	global Scr_width
+	global Scr_height
+
+	hor_scale = int(Scr_width*percentile)
+	ver_scale = int(Scr_height*percentile)
+
 	temp_image = PIL.Image.open(temp_image)
 	width, height = temp_image.size
-	if width>1100:
-		new_height = int((1100/width)*height)
-		temp_image = temp_image.resize((1100,new_height))
+	if width>hor_scale:
+		new_height = int((hor_scale/width)*height)
+		temp_image = temp_image.resize((hor_scale,new_height))
 		width, height = temp_image.size
-	if height>1000:
-		new_width = int((1000/height)*width)
-		temp_image = temp_image.resize((new_width,1000))
+	if height>ver_scale:
+		new_width = int((ver_scale/height)*width)
+		temp_image = temp_image.resize((new_width,ver_scale))
 	return temp_image
 
 # Function "Flow" which dictates the forward and backward buttons
@@ -55,9 +61,9 @@ def Flow(image_number):
 			width=10, height=10, relief=FLAT, state=DISABLED)
 
 	# Place the widgets on the window
-	image_label.place(x=640-(width//2), y=500-(height//2))
-	button_back.place(x=0, y=432)
-	button_forward.place(x=1200, y=432)
+	image_label.place(x=(Scr_width//2)-(width//2), y=(Scr_height//2)-(height//2))
+	button_back.place(x=0, y=(Scr_height//2)-80)
+	button_forward.place(x=Scr_width-80, y=(Scr_height//2)-80)
 
 # function for selecting directory and updating displayed one
 def browse_dir():
@@ -92,11 +98,18 @@ def show_images():
 			x.encode("utf-8").endswith(b".JPG"),
 			])]
 	Images_dir = [os.path.join(directory,x) for x in files]
+	
+	# Get current Screen resolution
+	# 10 % of the screen height is excluded to accomodate Start menu
+	global Scr_width
+	global Scr_height
+	Scr_width = root.winfo_screenwidth()
+	Scr_height = int(root.winfo_screenheight()*0.9)
 
 	# Create a second window for displaying images
 	Image_window = Toplevel()
 	Image_window.title("image Viewer")
-	Image_window.geometry("1280x1024")
+	Image_window.geometry("{}x{}".format(Scr_width,Scr_height))
 	Image_window.config(bg="black")
 
 	# load first image and resize the image if it is greater than 1100,1000
@@ -104,7 +117,7 @@ def show_images():
 	temp_image = ImageTk.PhotoImage(resize(Images_dir[0]))
 	width, height = temp_image.width(), temp_image.height()
 	image_label = Label(Image_window, image=temp_image)
-	image_label.place(x=640-(width//2), y=500-(height//2))
+	image_label.place(x=(Scr_width//2)-(width//2), y=(Scr_height//2)-(height//2))
 
 	# create button widgets
 	button_back = Button(Image_window, text="<<", bg="black", fg="white",
@@ -113,8 +126,9 @@ def show_images():
 		width=10, height=10, relief=FLAT, command=lambda: Flow(2))
 
 	# place those buttons
-	button_back.place(x=0, y=432)
-	button_forward.place(x=1200, y=432)
+	# height of button is 80
+	button_back.place(x=0, y=(Scr_height//2)-80)
+	button_forward.place(x=Scr_width-80, y=(Scr_height//2)-80)
 
 
 # Some Widgets on the main Window
